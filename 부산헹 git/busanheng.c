@@ -7,6 +7,8 @@
 #define PROB_MIN	10	// 확률
 #define PROB_MAX	90
 
+//Test
+
 int main(void) {
 
 	// 인트로
