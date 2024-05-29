@@ -128,7 +128,7 @@ void move_zombie() {
     }
 }
 
-void move_madongseok() {
+int get_madongseok_move() {
     int move_direction;
     while (1) {
         printf("madongseok move (0 : stay, 1 : left) >> ");
@@ -136,10 +136,13 @@ void move_madongseok() {
             break;
         }
         else {
-            while (getchar() != '\n'); 
+            while (getchar() != '\n');
         }
     }
+    return move_direction;
+}
 
+void move_madongseok(int move_direction) {
     if (move_direction == MOVE_LEFT && madongseok > 1) {
         madongseok--;
     }
@@ -162,6 +165,16 @@ void print_status(int prev_citizen_position, int current_zombie_position) {
         }
         printf("\n");
     }
+}
+
+void print_madongseok_status(int move_direction) {
+    char move_direction_str[10];
+    if (move_direction == MOVE_LEFT) {
+        strcpy_s(move_direction_str, sizeof(move_direction_str), "left");
+    } else {
+        strcpy_s(move_direction_str, sizeof(move_direction_str), "stay");
+    }
+    printf("madongseok : %s %d (aggro : %d, stamina : %d)\n", move_direction_str, madongseok, aggro, stamina);
 }
 
 void print_outro() {
@@ -200,8 +213,11 @@ int main(void) {
             break; // 시민이 탈출하면 무한 루프 종료
         }
 
-        move_madongseok();
+        int move_direction = get_madongseok_move();
+        move_madongseok(move_direction);
+
         print_train_state();
+        print_madongseok_status(move_direction);
 
         // Sleep(4000); // 4초 대기
     }
