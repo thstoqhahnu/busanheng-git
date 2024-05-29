@@ -29,9 +29,10 @@
 // 전역 변수 선언
 int train_length; // 기차 길이
 int p; // 확률
-int stamina;
+int stamina; // 체력
 int citizen_position, zombie_position, madongseok; // 시민, 좀비, 마동석 위치
 int zombie_move_count = 0; // 좀비의 이동 턴 카운터
+int aggro = 1; // 기본값 : 1
 
 void print_intro() {
     printf(" ============= 부산헹 시작 =============\n");
@@ -106,7 +107,7 @@ void print_train_state() {
     }
     printf("\n");
     printf("###############\n");
-    printf("\n");
+    printf("\n\n");
 }
 
 void move_citizen() {
@@ -127,14 +128,32 @@ void move_zombie() {
     }
 }
 
+void move_madongseok() {
+    int move_direction;
+    while (1) {
+        printf("madongseok move (0 : stay, 1 : left) >> ");
+        if (scanf_s("%d", &move_direction) == 1 && (move_direction == MOVE_STAY || move_direction == MOVE_LEFT)) {
+            break;
+        }
+        else {
+            while (getchar() != '\n'); 
+        }
+    }
+
+    if (move_direction == MOVE_LEFT && madongseok > 1) {
+        madongseok--;
+    }
+    printf("\n");
+}
+
 void print_status(int prev_citizen_position, int current_zombie_position) {
     if (citizen_position <= 1) {
-        printf("Citizen : %d -> %d\n", prev_citizen_position, citizen_position);
+        printf("Citizen : %d -> %d (aggro : %d) \n", prev_citizen_position, citizen_position, aggro);
         printf("Zombie : stay %d (cannot move) \n", zombie_position);
         printf("SUCCESS! citizen(s) escaped to the next train\n");
     }
     else {
-        printf("Citizen : %d -> %d\n", prev_citizen_position, citizen_position);
+        printf("Citizen : %d -> %d (aggro : %d)\n", prev_citizen_position, citizen_position, aggro);
         if (zombie_move_count % 2 == 0) {
             printf("Zombie : stay %d (cannot move) \n", zombie_position);
         }
@@ -157,6 +176,7 @@ void print_outro() {
 }
 
 int main(void) {
+
     print_intro();
     Sleep(3000); // 3초 대기
     system("cls"); // 화면 지우기
@@ -180,7 +200,10 @@ int main(void) {
             break; // 시민이 탈출하면 무한 루프 종료
         }
 
-        Sleep(4000); // 4초 대기
+        move_madongseok();
+        print_train_state();
+
+        // Sleep(4000); // 4초 대기
     }
 
     print_outro();
