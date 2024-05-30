@@ -137,10 +137,18 @@ void move_zombie() {
     static int madongseok_held = 0; // 이전 턴에서 마동석이 좀비를 붙들었는지 여부를 저장하는 변수
 
     // 이전 턴에서 마동석이 좀비를 붙들었다면 이동 불가능
+    if (madongseok_pulled_zombie) {
+        madongseok_pulled_zombie = 0; // 이동 불가능 상태 해제
+        madongseok_held = 1; // 다음 턴에 이동 불가 표시
+        printf("madongseok pulled zombie... Next turn, it can't move\n");
+        return;
+    }
+
     if (madongseok_held) {
         madongseok_held = 0; // 이동 불가능 상태 해제
         return;
     }
+
     if (zombie_move_count % 2 == 0 && zombie_position > 1) { // 2번째 턴마다 좀비 이동
         // 어그로가 높은 쪽으로 이동
         if (aggro > 1 && zombie_position - madongseok > 1) { // 어그로가 높고, 마동석과 인접하지 않음
