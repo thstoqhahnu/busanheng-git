@@ -83,6 +83,7 @@ void initialize_positions() {
     citizen_position = train_length - 6; // 시민의 초기 위치
     zombie_position = train_length - 3; // 좀비의 초기 위치
     madongseok = train_length - 2; // 마동석의 초기 위치
+    aggro = 1; // 어그로 초기값 설정
 }
 
 void print_train_state() {
@@ -90,7 +91,7 @@ void print_train_state() {
     printf("#");
     for (int i = 1; i <= train_length; i++) {
         if (i == madongseok) {
-            printf("M#");
+            printf("M");
         }
         else if (i == citizen_position) {
             printf("C");
@@ -102,10 +103,7 @@ void print_train_state() {
             printf(" ");
         }
     }
-    for (int i = train_length; i < 14; i++) {
-        printf(" ");
-    }
-    printf("\n");
+    printf(" #\n"); // 여기 수정
     printf("###############\n");
     printf("\n\n");
 }
@@ -160,8 +158,18 @@ int get_madongseok_move() {
 }
 
 void move_madongseok(int move_direction) {
-    if (move_direction == MOVE_LEFT && madongseok > 1) {
+    if (move_direction == MOVE_LEFT && madongseok > 1 && madongseok - zombie_position > 1) {
         madongseok--;
+        if (aggro < AGGRO_MAX) {
+            aggro++;
+        }
+    }
+    else if (move_direction == MOVE_STAY) {
+        if (aggro > AGGRO_MIN) {
+            aggro--;
+        }
+    }
+    else if (move_direction == MOVE_LEFT && madongseok - zombie_position <= 1) {
     }
     printf("\n");
 }
@@ -232,8 +240,6 @@ int main(void) {
 
         int move_direction = get_madongseok_move();
         move_madongseok(move_direction);
-
-        print_train_state();
         print_madongseok_status(move_direction);
     }
 
