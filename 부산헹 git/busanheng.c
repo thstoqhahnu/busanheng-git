@@ -128,8 +128,15 @@ void move_citizen() {
 
 void move_zombie() {
     if (zombie_move_count % 2 == 0 && zombie_position > 1) { // 2번째 턴마다 좀비 이동
-        if (rand() % 100 < p) { // p% 확률로 왼쪽으로 이동
-            zombie_position--;
+        if (aggro > 1 && zombie_position - madongseok > 1) { // 어그로가 높고, 마동석과 인접하지 않음
+            if (madongseok < zombie_position) {
+                zombie_position--;
+            }
+        }
+        else if (citizen_position < zombie_position && zombie_position - citizen_position > 1) { // 어그로가 낮거나 같으면 시민쪽으로 이동
+            if (rand() % 100 < p) { // p% 확률로 왼쪽으로 이동
+                zombie_position--;
+            }
         }
     }
     zombie_move_count++;
