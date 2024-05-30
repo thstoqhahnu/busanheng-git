@@ -33,6 +33,7 @@ int stamina; // 체력
 int citizen_position, zombie_position, madongseok; // 시민, 좀비, 마동석 위치
 int zombie_move_count = 0; // 좀비의 이동 턴 카운터
 int aggro = 1; // 기본값 : 1
+int madongseok_pulled_zombie = 0; // 마동석이 좀비를 붙들었는지 여부를 저장하는 변수
 
 void print_intro() {
     printf(" ============= 부산헹 시작 =============\n");
@@ -312,6 +313,27 @@ void madongseok_action_rule(int action) {
         printf("madongseok provoked zombie...\n");
         aggro = AGGRO_MAX; // 어그로 최대값으로 설정
         printf("madongseok : %d (aggro : %d -> %d, stamina : %d)\n", madongseok, aggro - 1, aggro, stamina);
+    }
+    // 붙들기
+    else if (action == ACTION_PULL) {
+        printf("madongseok tries to pull the zombie...\n");
+        aggro += 2; // 어그로 2 증가
+        if (aggro > AGGRO_MAX) {
+            aggro = AGGRO_MAX; // 어그로가 최대값보다 크면 최대값으로 설정
+        }
+        stamina--; // 체력 1 감소
+        if (stamina < STM_MIN) {
+            stamina = STM_MIN; // 체력이 최소값보다 작으면 최소값으로 설정
+        }
+
+        if (rand() % 100 >= p) { // (100-p)% 확률로 성공
+            madongseok_pulled_zombie = 1; // 좀비를 붙들었음을 표시
+            printf("madongseok pulled zombie... Next turn, it can't move\n");
+        }
+        else { // 붙들기 실패
+            printf("madongseok failed to pull the zombie\n");
+        }
+        printf("madongseok : %d (aggro : %d, stamina : %d)\n", madongseok, aggro, stamina);
     }
     printf("\n");
 }
