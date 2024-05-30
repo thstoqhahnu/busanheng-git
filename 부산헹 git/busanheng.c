@@ -267,6 +267,9 @@ void zombie_action_rule() {
     else if (attack_target == ATK_DONGSEOK) {
         printf("Zombie attacks madongseok!\n");
         stamina--; // 마동석의 stamina 감소
+        if (stamina < STM_MIN) {
+            stamina = STM_MIN;
+        }
         if (stamina == STM_MIN) {
             printf("citizen does nothing.\n");
             printf("GAME OVER! citizen dead...\n");
@@ -324,6 +327,7 @@ void madongseok_action_rule(int action) {
     }
     // 붙들기
     else if (action == ACTION_PULL) {
+        printf("madongseok attempts to pull the zombie...\n");
         aggro += 2; // 어그로 2 증가
         if (aggro > AGGRO_MAX) {
             aggro = AGGRO_MAX; // 어그로가 최대값보다 크면 최대값으로 설정
@@ -344,6 +348,7 @@ void madongseok_action_rule(int action) {
     }
     printf("\n");
 }
+
 
 void print_outro() {
     printf(" _____  _                              _ \n");
