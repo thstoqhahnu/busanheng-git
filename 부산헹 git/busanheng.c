@@ -327,7 +327,6 @@ void madongseok_action_rule(int action) {
     }
     // 붙들기
     else if (action == ACTION_PULL) {
-        printf("madongseok attempts to pull the zombie...\n");
         aggro += 2; // 어그로 2 증가
         if (aggro > AGGRO_MAX) {
             aggro = AGGRO_MAX; // 어그로가 최대값보다 크면 최대값으로 설정
@@ -336,7 +335,6 @@ void madongseok_action_rule(int action) {
         if (stamina < STM_MIN) {
             stamina = STM_MIN; // 체력이 최소값보다 작으면 최소값으로 설정
         }
-
         if (rand() % 100 >= p) { // (100-p)% 확률로 성공
             madongseok_pulled_zombie = 1; // 좀비를 붙들었음을 표시
             printf("madongseok pulled zombie... Next turn, it can't move\n");
