@@ -3,7 +3,6 @@
 #include <time.h>
 #include <Windows.h>
 
-// Test
 #define LEN_MIN 15 // 기차 길이
 #define LEN_MAX 50
 #define STM_MIN 0 // 마동석 체력
@@ -112,8 +111,18 @@ void print_train_state() {
 }
 
 void move_citizen() {
-    if (rand() % 100 < p && citizen_position > 1) { // p% 확률로 왼쪽으로 이동
-        citizen_position--;
+    if (rand() % 100 < p) { // p% 확률로 이동하지 않음
+        if (aggro > AGGRO_MIN) {
+            aggro--; // 이동하지 않으면 aggro 감소
+        }
+    }
+    else { // (100-p)% 확률로 왼쪽으로 이동
+        if (citizen_position > 1) {
+            citizen_position--;
+        }
+        if (aggro < AGGRO_MAX) {
+            aggro++; // 이동하면 aggro 증가
+        }
     }
 }
 
@@ -219,8 +228,6 @@ int main(void) {
 
         print_train_state();
         print_madongseok_status(move_direction);
-
-        // Sleep(4000); // 4초 대기
     }
 
     print_outro();
