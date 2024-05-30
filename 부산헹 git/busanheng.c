@@ -175,13 +175,18 @@ void move_madongseok(int move_direction) {
 }
 
 void print_status(int prev_citizen_position, int current_zombie_position) {
+    if (prev_citizen_position == citizen_position) { // 처음 출력될 때만 aggro 값을 1로 출력
+        printf("Citizen : %d -> %d (aggro : 1)\n", prev_citizen_position, citizen_position);
+    }
+    else {
+        printf("Citizen : %d -> %d (aggro : %d)\n", prev_citizen_position, citizen_position, aggro);
+    }
+
     if (citizen_position <= 1) {
-        printf("Citizen : %d -> %d (aggro : %d) \n", prev_citizen_position, citizen_position, aggro);
         printf("Zombie : stay %d (cannot move) \n", zombie_position);
         printf("SUCCESS! citizen(s) escaped to the next train\n");
     }
     else {
-        printf("Citizen : %d -> %d (aggro : %d)\n", prev_citizen_position, citizen_position, aggro);
         if (zombie_move_count % 2 == 0) {
             printf("Zombie : stay %d (cannot move) \n", zombie_position);
         }
@@ -191,6 +196,9 @@ void print_status(int prev_citizen_position, int current_zombie_position) {
         printf("\n");
     }
 }
+
+
+
 
 void print_madongseok_status(int move_direction) {
     char move_direction_str[10];
