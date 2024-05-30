@@ -272,17 +272,6 @@ void print_madongseok_status(int move_direction) {
     printf("\n");
 }
 
-void print_outro() {
-    printf(" _____  _                              _ \n");
-    printf("|_   _|| |                            | |\n");
-    printf("  | |  | |__    ___    ___  _ __    __| |\n");
-    printf("  | |  | '_ \\  / _ \\  / _ \\| '_ \\  / _` |\n");
-    printf("  | |  | | | ||  __/ |  __/| | | || (_| |\n");
-    printf("  \\_/  |_| |_| \\___|  \\___||_| |_| \\__,_|\n");
-    printf("                                         \n");
-    printf("\n프로그램을 성공적으로 종료합니다.\n");
-}
-
 void print_actions(int citizen_action, int zombie_action) {
     if (citizen_action == 0) {
         printf("Citizen does nothing.\n");
@@ -292,6 +281,40 @@ void print_actions(int citizen_action, int zombie_action) {
         printf("Zombie attacked nobody.\n");
     }
     printf("\n");
+}
+
+void madongseok_action_rule(int action) {
+    // 휴식
+    if (action == ACTION_REST) {
+        printf("madongseok rests...\n");
+        aggro--; // 어그로 감소
+        if (aggro < AGGRO_MIN) {
+            aggro = AGGRO_MIN; // 어그로가 최소값보다 작으면 최소값으로 설정
+        }
+        stamina++; // 체력 증가
+        if (stamina > STM_MAX) {
+            stamina = STM_MAX; // 체력이 최대값보다 크면 최대값으로 설정
+        }
+        printf("madongseok : %d (aggro : %d -> %d, stamina : %d -> %d)\n", madongseok, aggro + 1, aggro, stamina - 1, stamina);
+    }
+    // 도발
+    else if (action == ACTION_PROVOKE) {
+        printf("madongseok provoked zombie...\n");
+        aggro = AGGRO_MAX; // 어그로 최대값으로 설정
+        printf("madongseok : %d (aggro : %d -> %d, stamina : %d)\n", madongseok, aggro - 1, aggro, stamina);
+    }
+    printf("\n");
+}
+
+void print_outro() {
+    printf(" _____  _                              _ \n");
+    printf("|_   _|| |                            | |\n");
+    printf("  | |  | |__    ___    ___  _ __    __| |\n");
+    printf("  | |  | '_ \\  / _ \\  / _ \\| '_ \\  / _` |\n");
+    printf("  | |  | | | ||  __/ |  __/| | | || (_| |\n");
+    printf("  \\_/  |_| |_| \\___|  \\___||_| |_| \\__,_|\n");
+    printf("                                         \n");
+    printf("\n프로그램을 성공적으로 종료합니다.\n");
 }
 
 int main(void) {
@@ -338,11 +361,26 @@ int main(void) {
             break; // 게임 종료
         }
 
+        print_actions(citizen_action, zombie_action);
+
         // 좀비의 행동 규칙 함수 호출
         zombie_action_rule();
 
-        print_actions(citizen_action, zombie_action);
-        print_madongseok_status(move_direction);
+        int madongseok_action;
+        while (1) {
+            printf("madongseok action (0.rest, 1.provoke) >> ");
+            if (scanf_s("%d", &madongseok_action) == 1 && (madongseok_action == ACTION_REST || madongseok_action == ACTION_PROVOKE)) {
+                break;
+            }
+            else {
+                while (getchar() != '\n');
+            }
+            printf("\n");
+        }
+        printf("\n");
+
+        // 마동석의 행동 규칙 함수 호출
+        madongseok_action_rule(madongseok_action);
     }
 
     print_outro();
