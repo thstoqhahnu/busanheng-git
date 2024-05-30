@@ -223,6 +223,43 @@ void print_status(int prev_citizen_position, int current_zombie_position) {
     }
 }
 
+void zombie_action_rule() {
+    // 좀비와 시민 또는 마동석이 인접한 경우
+    if (citizen_position == zombie_position + 1 || madongseok == zombie_position + 1) {
+        if (rand() % 2 == 0) { // 무작위로 시민이나 마동석을 선택하여 공격
+            printf("Zombie attacks citizen!\n");
+            printf("GAME OVER!\n");
+            exit(0); // 게임 종료
+        }
+        else {
+            printf("Zombie attacks madongseok!\n");
+            stamina--; // 마동석의 stamina 감소
+            if (stamina == STM_MIN) {
+                printf("GAME OVER!\n");
+                exit(0); // 게임 종료
+            }
+        }
+    }
+    else if (citizen_position == zombie_position - 1 || madongseok == zombie_position - 1) {
+        printf("GAME OVER! citizen dead...\n");
+        exit(0); // 게임 종료
+    }
+    else if (aggro > 1) {
+        if (citizen_position > zombie_position) {
+            printf("GAME OVER! citizen dead...\n");
+            exit(0); // 게임 종료
+        }
+        else if (madongseok > zombie_position) {
+            printf("Zombie attacks madongseok!\n");
+            stamina--; // 마동석의 stamina 감소
+            if (stamina == STM_MIN) {
+                printf("GAME OVER! citizen dead...\n");
+                exit(0); // 게임 종료
+            }
+        }
+    }
+}
+
 void print_madongseok_status(int move_direction) {
     char move_direction_str[10];
     if (move_direction == MOVE_LEFT) {
@@ -300,6 +337,9 @@ int main(void) {
             printf("YOU WIN!\n");
             break; // 게임 종료
         }
+
+        // 좀비의 행동 규칙 함수 호출
+        zombie_action_rule();
 
         print_actions(citizen_action, zombie_action);
         print_madongseok_status(move_direction);
