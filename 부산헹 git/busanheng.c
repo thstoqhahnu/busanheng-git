@@ -118,16 +118,16 @@ void print_train_state() {
 
 void move_citizen() {
     if (rand() % 100 < p) { // p% 확률로 이동하지 않음
-        if (aggro > AGGRO_MIN) {
-            aggro--; // 이동하지 않으면 aggro 감소
-        }
-    }
-    else { // (100-p)% 확률로 왼쪽으로 이동
         if (citizen_position > 1) {
             citizen_position--;
         }
         if (aggro < AGGRO_MAX) {
             aggro++; // 이동하면 aggro 증가
+        }
+    }
+    else { // (100-p)% 확률로 이동하지 않음
+        if (aggro > AGGRO_MIN) {
+            aggro--; // 이동하지 않으면 aggro 감소
         }
     }
 }
@@ -199,7 +199,13 @@ void print_status(int prev_citizen_position, int current_zombie_position) {
         printf("Citizen : %d -> %d (aggro : 1)\n", prev_citizen_position, citizen_position);
     }
     else {
-        printf("Citizen : %d -> %d (aggro : %d)\n", prev_citizen_position, citizen_position, aggro);
+        printf("Citizen : %d -> %d (aggro : %d -> ", prev_citizen_position, citizen_position, aggro);
+        if (aggro > 1) {
+            printf("%d)\n", aggro - 1); // 어그로가 증가한 경우 이전 어그로 값 출력
+        }
+        else {
+            printf("%d)\n", aggro); // 어그로가 감소한 경우 현재 어그로 값 출력
+        }
     }
 
     if (citizen_position <= 1) {
@@ -288,6 +294,13 @@ int main(void) {
         // 행동 페이즈
         int citizen_action = 0;
         int zombie_action = 0;
+
+        // 시민의 행동 규칙
+        if (citizen_position == 1) {
+            printf("YOU WIN!\n");
+            break; // 게임 종료
+        }
+
         print_actions(citizen_action, zombie_action);
         print_madongseok_status(move_direction);
     }
