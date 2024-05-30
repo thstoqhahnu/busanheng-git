@@ -3,6 +3,8 @@
 #include <time.h>
 #include <Windows.h>
 
+//Test
+
 #define LEN_MIN 15 // 기차 길이
 #define LEN_MAX 50
 #define STM_MIN 0 // 마동석 체력
