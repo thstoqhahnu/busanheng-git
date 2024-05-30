@@ -87,9 +87,14 @@ void initialize_positions() {
 }
 
 void print_train_state() {
-    printf("###############\n");
+    // 기차 천장
+    for (int i = 0; i < train_length + 2; i++) {
+        printf("#");
+    }
+    printf("\n");
+    // 기차 내부
     printf("#");
-    for (int i = 1; i <= train_length; i++) {
+    for (int i = 0; i < train_length; i++) {
         if (i == madongseok) {
             printf("M");
         }
@@ -103,8 +108,11 @@ void print_train_state() {
             printf(" ");
         }
     }
-    printf(" #\n"); // 여기 수정
-    printf("###############\n");
+    printf("#\n"); // 오른쪽 벽
+    // 기차 바닥
+    for (int i = 0; i < train_length + 2; i++) {
+        printf("#");
+    }
     printf("\n\n");
 }
 
@@ -196,9 +204,6 @@ void print_status(int prev_citizen_position, int current_zombie_position) {
         printf("\n");
     }
 }
-
-
-
 
 void print_madongseok_status(int move_direction) {
     char move_direction_str[10];
