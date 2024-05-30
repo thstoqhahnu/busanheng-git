@@ -3,8 +3,6 @@
 #include <time.h>
 #include <Windows.h>
 
-//Test
-
 #define LEN_MIN 15 // 기차 길이
 #define LEN_MAX 50
 #define STM_MIN 0 // 마동석 체력
@@ -211,10 +209,12 @@ void print_madongseok_status(int move_direction) {
     char move_direction_str[10];
     if (move_direction == MOVE_LEFT) {
         strcpy_s(move_direction_str, sizeof(move_direction_str), "left");
-    } else {
+    }
+    else {
         strcpy_s(move_direction_str, sizeof(move_direction_str), "stay");
     }
     printf("madongseok : %s %d (aggro : %d, stamina : %d)\n", move_direction_str, madongseok, aggro, stamina);
+    printf("\n");
 }
 
 void print_outro() {
@@ -228,6 +228,17 @@ void print_outro() {
     printf("\n프로그램을 성공적으로 종료합니다.\n");
 }
 
+void print_actions(int citizen_action, int zombie_action) {
+    if (citizen_action == 0) {
+        printf("Citizen does nothing.\n");
+    }
+
+    if (zombie_action == 0) {
+        printf("Zombie attacked nobody.\n");
+    }
+    printf("\n");
+}
+
 int main(void) {
 
     print_intro();
@@ -239,22 +250,34 @@ int main(void) {
 
     print_train_state();
 
+    printf("\n");
+
     while (1) {
+        print_train_state();
+
         int prev_citizen_position = citizen_position;
         int current_zombie_position = zombie_position;
 
+        // 이동 페이즈
         move_citizen();
         move_zombie();
-
-        print_train_state();
         print_status(prev_citizen_position, current_zombie_position);
 
+        int move_direction = get_madongseok_move();
+        move_madongseok(move_direction);
+
+        print_train_state();
+        print_madongseok_status(move_direction);
+
+        //print_status(prev_citizen_position, current_zombie_position);
         if (citizen_position <= 1) {
             break; // 시민이 탈출하면 무한 루프 종료
         }
 
-        int move_direction = get_madongseok_move();
-        move_madongseok(move_direction);
+        // 행동 페이즈
+        int citizen_action = 0;
+        int zombie_action = 0;
+        print_actions(citizen_action, zombie_action);
         print_madongseok_status(move_direction);
     }
 
