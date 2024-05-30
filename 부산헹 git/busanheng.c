@@ -133,7 +133,15 @@ void move_citizen() {
 }
 
 void move_zombie() {
+    static int madongseok_held = 0; // 이전 턴에서 마동석이 좀비를 붙들었는지 여부를 저장하는 변수
+
+    // 이전 턴에서 마동석이 좀비를 붙들었다면 이동 불가능
+    if (madongseok_held) {
+        madongseok_held = 0; // 이동 불가능 상태 해제
+        return;
+    }
     if (zombie_move_count % 2 == 0 && zombie_position > 1) { // 2번째 턴마다 좀비 이동
+        // 어그로가 높은 쪽으로 이동
         if (aggro > 1 && zombie_position - madongseok > 1) { // 어그로가 높고, 마동석과 인접하지 않음
             if (madongseok < zombie_position) {
                 zombie_position--;
@@ -145,7 +153,9 @@ void move_zombie() {
             }
         }
     }
-    zombie_move_count++;
+    zombie_move_count++; // 좀비가 이동한 턴임을 카운트
+
+    // 4턴마다 카운트 초기화
     if (zombie_move_count == 4) {
         zombie_move_count = 0;
     }
@@ -173,8 +183,10 @@ void move_madongseok(int move_direction) {
         }
     }
     else if (move_direction == MOVE_STAY) {
-        if (aggro > AGGRO_MIN) {
-            aggro--;
+        if (madongseok > 1) { // 제자리에 있을 때만 어그로 감소
+            if (aggro > AGGRO_MIN) {
+                aggro--;
+            }
         }
     }
     else if (move_direction == MOVE_LEFT && madongseok - zombie_position <= 1) {
