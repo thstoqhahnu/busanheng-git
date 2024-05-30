@@ -176,6 +176,7 @@ int get_madongseok_move() {
 }
 
 void move_madongseok(int move_direction) {
+
     if (move_direction == MOVE_LEFT && madongseok > 1 && madongseok - zombie_position > 1) {
         madongseok--;
         if (aggro < AGGRO_MAX) {
@@ -195,6 +196,7 @@ void move_madongseok(int move_direction) {
 }
 
 void print_status(int prev_citizen_position, int current_zombie_position) {
+
     if (prev_citizen_position == citizen_position) { // 처음 출력될 때만 aggro 값을 1로 출력
         printf("Citizen : %d -> %d (aggro : 1)\n", prev_citizen_position, citizen_position);
     }
@@ -224,39 +226,47 @@ void print_status(int prev_citizen_position, int current_zombie_position) {
 }
 
 void zombie_action_rule() {
-    // 좀비와 시민 또는 마동석이 인접한 경우
-    if (citizen_position == zombie_position + 1 || madongseok == zombie_position + 1) {
-        if (rand() % 2 == 0) { // 무작위로 시민이나 마동석을 선택하여 공격
-            printf("Zombie attacks citizen!\n");
-            printf("GAME OVER!\n");
-            exit(0); // 게임 종료
+
+    int attack_target = ATK_NONE; // 공격 대상 (0: 아무도 공격 안함, 1: 시민 공격, 2: 마동석 공격)
+
+    // 좀비와 시민이 인접한 경우
+    if (citizen_position == zombie_position + 1) {
+        attack_target = ATK_CITIZEN;
+    }
+    // 좀비와 마동석이 인접한 경우
+    if (madongseok == zombie_position + 1) {
+        if (attack_target == ATK_NONE) {
+            attack_target = ATK_DONGSEOK;
         }
         else {
-            printf("Zombie attacks madongseok!\n");
-            stamina--; // 마동석의 stamina 감소
-            if (stamina == STM_MIN) {
-                printf("GAME OVER!\n");
-                exit(0); // 게임 종료
+            // 둘 다 인접한 경우, 어그로 값에 따라 공격 대상 선택
+            if (aggro >= 3) { // 어그로가 3 이상이면 마동석을 공격
+                attack_target = ATK_DONGSEOK;
+            }
+            else { // 어그로가 3 미만이면 시민을 공격
+                attack_target = ATK_CITIZEN;
             }
         }
     }
-    else if (citizen_position == zombie_position - 1 || madongseok == zombie_position - 1) {
+    // 공격 대상에 따른 행동
+    if (attack_target == ATK_CITIZEN) {
+        printf("Zombie attacks citizen!\n");
+        printf("citizen does nothing.\n");
         printf("GAME OVER! citizen dead...\n");
         exit(0); // 게임 종료
     }
-    else if (aggro > 1) {
-        if (citizen_position > zombie_position) {
+    else if (attack_target == ATK_DONGSEOK) {
+        printf("Zombie attacks madongseok!\n");
+        stamina--; // 마동석의 stamina 감소
+        if (stamina == STM_MIN) {
+            printf("citizen does nothing.\n");
             printf("GAME OVER! citizen dead...\n");
             exit(0); // 게임 종료
         }
-        else if (madongseok > zombie_position) {
-            printf("Zombie attacks madongseok!\n");
-            stamina--; // 마동석의 stamina 감소
-            if (stamina == STM_MIN) {
-                printf("GAME OVER! citizen dead...\n");
-                exit(0); // 게임 종료
-            }
-        }
+    }
+    else {
+        // 아무도 인접하지 않은 경우
+        printf("Zombie attacked nobody.\n");
     }
 }
 
