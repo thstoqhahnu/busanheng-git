@@ -408,8 +408,8 @@ int main(void) {
 
         int madongseok_action;
         while (1) {
-            printf("madongseok action (0.rest, 1.provoke) >> ");
-            if (scanf_s("%d", &madongseok_action) == 1 && (madongseok_action == ACTION_REST || madongseok_action == ACTION_PROVOKE)) {
+            printf("madongseok action (0.rest, 1.provoke, 2.pull) >> ");
+            if (scanf_s("%d", &madongseok_action) == 1 && (madongseok_action == ACTION_REST || madongseok_action == ACTION_PROVOKE || madongseok_action == ACTION_PULL)) {
                 break;
             }
             else {
