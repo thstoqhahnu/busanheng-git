@@ -269,7 +269,6 @@ int main(void) {
         print_train_state();
         print_madongseok_status(move_direction);
 
-        //print_status(prev_citizen_position, current_zombie_position);
         if (citizen_position <= 1) {
             break; // 시민이 탈출하면 무한 루프 종료
         }
