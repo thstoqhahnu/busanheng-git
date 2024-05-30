@@ -324,7 +324,6 @@ void madongseok_action_rule(int action) {
     }
     // 붙들기
     else if (action == ACTION_PULL) {
-        printf("madongseok tries to pull the zombie...\n");
         aggro += 2; // 어그로 2 증가
         if (aggro > AGGRO_MAX) {
             aggro = AGGRO_MAX; // 어그로가 최대값보다 크면 최대값으로 설정
