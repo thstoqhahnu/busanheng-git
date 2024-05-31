@@ -3,7 +3,6 @@
 #include <time.h>
 #include <Windows.h>
 
-// Test
 #define LEN_MIN 15 // 기차 길이
 #define LEN_MAX 50
 #define STM_MIN 0 // 마동석 체력
@@ -236,7 +235,6 @@ void print_status(int prev_citizen_position, int current_zombie_position) {
 }
 
 void zombie_action_rule() {
-
     int attack_target = ATK_NONE; // 공격 대상 (0: 아무도 공격 안함, 1: 시민 공격, 2: 마동석 공격)
 
     // 좀비와 시민이 인접한 경우
@@ -277,10 +275,11 @@ void zombie_action_rule() {
             exit(0); // 게임 종료
         }
     }
+    /*
     else {
         // 아무도 인접하지 않은 경우
         printf("Zombie attacked nobody.\n");
-    }
+    }*/
 }
 
 void print_madongseok_status(int move_direction) {
@@ -294,6 +293,7 @@ void print_madongseok_status(int move_direction) {
     printf("madongseok : %s %d (aggro : %d, stamina : %d)\n", move_direction_str, madongseok, aggro, stamina);
     printf("\n");
 }
+
 
 void print_actions(int citizen_action, int zombie_action) {
     if (citizen_action == 0) {
@@ -374,7 +374,6 @@ int main(void) {
     printf("\n");
 
     while (1) {
-        print_train_state();
 
         int prev_citizen_position = citizen_position;
         int current_zombie_position = zombie_position;
@@ -382,6 +381,9 @@ int main(void) {
         // 이동 페이즈
         move_citizen();
         move_zombie();
+
+        print_train_state();
+
         print_status(prev_citizen_position, current_zombie_position);
 
         int move_direction = get_madongseok_move();
