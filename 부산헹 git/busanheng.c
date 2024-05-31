@@ -32,7 +32,8 @@ int p; // 확률
 int stamina; // 체력
 int citizen_position, zombie_position, madongseok; // 시민, 좀비, 마동석 위치
 int zombie_move_count = 0; // 좀비의 이동 턴 카운터
-int aggro = 1; // 기본값 : 1
+int citizen_aggro = 1;  // 시민 어그로 기본값 : 1
+int madongseok_aggro = 1;   // 마동석 어그로 기본값 : 1
 int madongseok_pulled_zombie = 0; // 마동석이 좀비를 붙들었는지 여부를 저장하는 변수
 
 void print_intro() {
@@ -84,7 +85,8 @@ void initialize_positions() {
     citizen_position = train_length - 6; // 시민의 초기 위치
     zombie_position = train_length - 3; // 좀비의 초기 위치
     madongseok = train_length - 2; // 마동석의 초기 위치
-    aggro = 1; // 어그로 초기값 설정
+    citizen_aggro = 1; // 시민 어그로 초기값 설정
+    madongseok_aggro = 1; // 마동석 어그로 초기값 설정
 }
 
 void print_train_state() {
@@ -118,17 +120,17 @@ void print_train_state() {
 }
 
 void move_citizen() {
-    if (rand() % 100 < p) { // p% 확률로 이동하지 않음
+    if (rand() % 100 >= p) { // p% 확률로 이동
         if (citizen_position > 1) {
             citizen_position--;
         }
-        if (aggro < AGGRO_MAX) {
-            aggro++; // 이동하면 aggro 증가
+        if (citizen_aggro < AGGRO_MAX) {
+            citizen_aggro++; // 이동하면 citizen_aggro 증가
         }
     }
     else { // (100-p)% 확률로 이동하지 않음
-        if (aggro > AGGRO_MIN) {
-            aggro--; // 이동하지 않으면 aggro 감소
+        if (citizen_aggro > AGGRO_MIN) {
+            citizen_aggro--; // 이동하지 않으면 citizen_aggro 감소
         }
     }
 }
@@ -151,7 +153,7 @@ void move_zombie() {
 
     if (zombie_move_count % 2 == 0 && zombie_position > 1) { // 2번째 턴마다 좀비 이동
         // 어그로가 높은 쪽으로 이동
-        if (aggro > 1 && zombie_position - madongseok > 1) { // 어그로가 높고, 마동석과 인접하지 않음
+        if (citizen_aggro > 1 && zombie_position - madongseok > 1) { // 어그로가 높고, 마동석과 인접하지 않음
             if (madongseok < zombie_position) {
                 zombie_position--;
             }
@@ -188,18 +190,16 @@ void move_madongseok(int move_direction) {
 
     if (move_direction == MOVE_LEFT && madongseok > 1 && madongseok - zombie_position > 1) {
         madongseok--;
-        if (aggro < AGGRO_MAX) {
-            aggro++;
+        if (citizen_aggro < AGGRO_MAX) {
+            citizen_aggro++;
         }
     }
     else if (move_direction == MOVE_STAY) {
         if (madongseok > 1) { // 제자리에 있을 때만 어그로 감소
-            if (aggro > AGGRO_MIN) {
-                aggro--;
+            if (citizen_aggro > AGGRO_MIN) {
+                citizen_aggro--;
             }
         }
-    }
-    else if (move_direction == MOVE_LEFT && madongseok - zombie_position <= 1) {
     }
     printf("\n");
 }
@@ -210,12 +210,12 @@ void print_status(int prev_citizen_position, int current_zombie_position) {
         printf("Citizen : %d -> %d (aggro : 1)\n", prev_citizen_position, citizen_position);
     }
     else {
-        printf("Citizen : %d -> %d (aggro : %d -> ", prev_citizen_position, citizen_position, aggro);
-        if (aggro > 1) {
-            printf("%d)\n", aggro - 1); // 어그로가 증가한 경우 이전 어그로 값 출력
+        printf("Citizen : %d -> %d (aggro : %d -> ", prev_citizen_position, citizen_position, citizen_aggro);
+        if (citizen_aggro > 1) {
+            printf("%d)\n", citizen_aggro - 1); // 어그로가 증가한 경우 이전 어그로 값 출력
         }
         else {
-            printf("%d)\n", aggro); // 어그로가 감소한 경우 현재 어그로 값 출력
+            printf("%d)\n", citizen_aggro); // 어그로가 감소한 경우 현재 어그로 값 출력
         }
     }
 
@@ -248,7 +248,7 @@ void zombie_action_rule() {
         }
         else {
             // 둘 다 인접한 경우, 어그로 값에 따라 공격 대상 선택
-            if (aggro >= 3) { // 어그로가 3 이상이면 마동석을 공격
+            if (citizen_aggro >= 3) { // 어그로가 3 이상이면 마동석을 공격
                 attack_target = ATK_DONGSEOK;
             }
             else { // 어그로가 3 미만이면 시민을 공격
@@ -270,16 +270,11 @@ void zombie_action_rule() {
             stamina = STM_MIN;
         }
         if (stamina == STM_MIN) {
-            printf("citizen does nothing.\n");
-            printf("GAME OVER! citizen dead...\n");
+            printf("madongseok does nothing.\n");
+            printf("GAME OVER! madongseok dead...\n");
             exit(0); // 게임 종료
         }
     }
-    /*
-    else {
-        // 아무도 인접하지 않은 경우
-        printf("Zombie attacked nobody.\n");
-    }*/
 }
 
 void print_madongseok_status(int move_direction) {
@@ -290,10 +285,9 @@ void print_madongseok_status(int move_direction) {
     else {
         strcpy_s(move_direction_str, sizeof(move_direction_str), "stay");
     }
-    printf("madongseok : %s %d (aggro : %d, stamina : %d)\n", move_direction_str, madongseok, aggro, stamina);
+    printf("madongseok : %s %d (aggro : %d, stamina : %d)\n", move_direction_str, madongseok, madongseok_aggro, stamina);
     printf("\n");
 }
-
 
 void print_actions(int citizen_action, int zombie_action) {
     if (citizen_action == 0) {
@@ -310,27 +304,27 @@ void madongseok_action_rule(int action) {
     // 휴식
     if (action == ACTION_REST) {
         printf("madongseok rests...\n");
-        aggro--; // 어그로 감소
-        if (aggro < AGGRO_MIN) {
-            aggro = AGGRO_MIN; // 어그로가 최소값보다 작으면 최소값으로 설정
+        madongseok_aggro--; // 어그로 감소
+        if (madongseok_aggro < AGGRO_MIN) {
+            madongseok_aggro = AGGRO_MIN; // 어그로가 최소값보다 작으면 최소값으로 설정
         }
         stamina++; // 체력 증가
         if (stamina > STM_MAX) {
             stamina = STM_MAX; // 체력이 최대값보다 크면 최대값으로 설정
         }
-        printf("madongseok : %d (aggro : %d -> %d, stamina : %d -> %d)\n", madongseok, aggro + 1, aggro, stamina - 1, stamina);
+        printf("madongseok : %d (aggro : %d -> %d, stamina : %d -> %d)\n", madongseok, madongseok_aggro + 1, madongseok_aggro, stamina - 1, stamina);
     }
     // 도발
     else if (action == ACTION_PROVOKE) {
         printf("madongseok provoked zombie...\n");
-        aggro = AGGRO_MAX; // 어그로 최대값으로 설정
-        printf("madongseok : %d (aggro : %d -> %d, stamina : %d)\n", madongseok, aggro - 1, aggro, stamina);
+        madongseok_aggro = AGGRO_MAX; // 어그로 최대값으로 설정
+        printf("madongseok : %d (aggro : %d -> %d, stamina : %d)\n", madongseok, madongseok_aggro - 1, madongseok_aggro, stamina);
     }
     // 붙들기
     else if (action == ACTION_PULL) {
-        aggro += 2; // 어그로 2 증가
-        if (aggro > AGGRO_MAX) {
-            aggro = AGGRO_MAX; // 어그로가 최대값보다 크면 최대값으로 설정
+        madongseok_aggro += 2; // 어그로 2 증가
+        if (madongseok_aggro > AGGRO_MAX) {
+            madongseok_aggro = AGGRO_MAX; // 어그로가 최대값보다 크면 최대값으로 설정
         }
         stamina--; // 체력 1 감소
         if (stamina < STM_MIN) {
@@ -343,11 +337,10 @@ void madongseok_action_rule(int action) {
         else { // 붙들기 실패
             printf("madongseok failed to pull the zombie\n");
         }
-        printf("madongseok : %d (aggro : %d, stamina : %d)\n", madongseok, aggro, stamina);
+        printf("madongseok : %d (aggro : %d, stamina : %d)\n", madongseok, madongseok_aggro, stamina);
     }
     printf("\n");
 }
-
 
 void print_outro() {
     printf(" _____  _                              _ \n");
